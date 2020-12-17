@@ -1,6 +1,6 @@
 # JWT-Auth-GO
 
-This is the full code used on in my mdeium article including unit tests
+This is the full code used in my medium article including unit tests
 
 ## Run 
 ```

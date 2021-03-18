@@ -1,0 +1,89 @@
+---
+name: Build Dev
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Go 1.13
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.13
+
+      - name: Test
+        run: go test
+
+  # build_docker:
+  #   name: Build Docker
+  #   runs-on: ubuntu-latest
+  #   needs: test
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
+
+  #     - name: Setup Google Cloud
+  #       uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+  #       with:
+  #         version: "270.0.0"
+  #         service_account_email: "${{ secrets.GKE_EMAIL }}"
+  #         service_account_key: "${{ secrets.GKE_KEY }}"
+
+  #     - name: Unshallow Checkout
+  #       run: |
+  #         git fetch --prune --unshallow
+
+  #     - name: Build and publish Docker image
+  #       run: |
+  #         gcloud auth configure-docker
+  #         make docker
+  #         make docker-publish DOCKER_LATEST=yes
+
+  # deploy_dev:
+  #   name: Deploy
+  #   runs-on: ubuntu-latest
+  #   needs: build_docker
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #       with:
+  #         repository: omiselabs/tsp-api
+  #         token: ${{ secrets.BOT_ACCESS_TOKEN }}
+  #         path: tsp-api
+
+  #     - name: Checkout Deploy
+  #       uses: actions/checkout@v2
+  #       with:
+  #         repository: omiselabs/tsp-deploy
+  #         token: ${{ secrets.BOT_ACCESS_TOKEN }}
+  #         path: tsp-deploy
+
+  #     - name: Unshallow Checkout
+  #       run: |
+  #         cd tsp-api || exit 1
+  #         git fetch --prune --unshallow
+
+  #     - name: Update Deploy
+  #       run: |
+  #         IMAGE_TAG=$(cd tsp-api || exit 1; sh build/scripts/mkversion.sh); export IMAGE_TAG
+  #         cd tsp-deploy || exit 1
+  #         sh scripts/update_tag.sh
+
+  #         git config user.email "63786211+omiselabs-bot@users.noreply.github.com"
+  #         git config user.name "omiselabs-bot"
+  #         git commit -am "dev: update to $IMAGE_TAG"
+  #         git tag -a "dev-$IMAGE_TAG" -m "tag dev-$IMAGE_TAG"
+  #         git tag -a dev -m "tag dev"
+
+  #         git push origin
+  #         git push --delete origin refs/tags/dev
+  #         git push --tags origin
+  #       env:
+  #         DEPLOY_ENV: "tspay_dev"

@@ -81,7 +81,6 @@ func Login(c *gin.Context) {
 	}
 
 	result := database.GlobalDB.Where("email = ?", payload.Email).First(&user)
-
 	if result.Error == gorm.ErrRecordNotFound {
 		c.JSON(401, gin.H{
 			"msg": "invalid user credentials",

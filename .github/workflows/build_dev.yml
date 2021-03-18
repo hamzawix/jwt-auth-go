@@ -3,7 +3,7 @@ name: Build Dev
 on:
   push:
     branches:
-      - master
+      - develop
 
 jobs:
   test:
@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          ref: develop
 
       - name: Setup Go 1.13
         uses: actions/setup-go@v1
